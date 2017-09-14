@@ -1,0 +1,13 @@
+{
+    "name": "ahoulgrave/bear-routing-symfony",
+    "description": "Bear Symfony Routing Adapter",
+    "authors": [
+        {
+            "name": "Agustin Houlgrave",
+            "email": "a.houlgrave@gmail.com"
+        }
+    ],
+    "require": {
+        "ahoulgrave/bear": "^1.0"
+    }
+}
