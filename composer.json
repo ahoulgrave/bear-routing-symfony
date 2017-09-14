@@ -8,6 +8,7 @@
         }
     ],
     "require": {
-        "ahoulgrave/bear": "^1.0"
+        "ahoulgrave/bear": "^1.0",
+        "symfony/routing": "^3.3"
     }
 }
