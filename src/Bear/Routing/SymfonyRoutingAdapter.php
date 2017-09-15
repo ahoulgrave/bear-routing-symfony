@@ -1,10 +1,12 @@
 <?php
 namespace Bear\Routing;
 
+use Psr\Container\ContainerInterface;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Router;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Class SymfonyRoutingAdapter
@@ -14,29 +16,44 @@ use Symfony\Component\Routing\RouteCollection;
 class SymfonyRoutingAdapter extends AbstractRoutingAdapter
 {
     /**
-     * @var RouteCollection
+     * @var LoaderInterface $loader
      */
-    private $routeCollection;
+    private $loader;
 
     /**
-     * @param RouteCollection $routeCollection
+     * @var mixed
      */
-    public function __construct(RouteCollection $routeCollection)
+    private $resource;
+
+    /**
+     * @var Router|null
+     */
+    private $router;
+
+    /**
+     * @param LoaderInterface $loader
+     * @param mixed           $resource
+     */
+    public function __construct(LoaderInterface $loader, $resource)
     {
-        $this->routeCollection = $routeCollection;
+        $this->loader   = $loader;
+        $this->resource = $resource;
     }
 
+    /**
+     * @param string $uri
+     * @param string $method
+     *
+     * @return RoutingResolution
+     *
+     * @throws \Exception
+     */
     public function resolve(string $uri, string $method): RoutingResolution
     {
-        $context = new RequestContext();
-        $context->fromRequest($this->request);
-
-        $matcher = new UrlMatcher($this->routeCollection, $context);
-
         $routingResolution = new RoutingResolution();
 
         try {
-            $info = $matcher->match($uri);
+            $info = $this->router->match($uri);
             if (!$info['_controller'] ?? null) {
                 throw new \Exception('No controller defined. Please set the "_controller" route parameter.');
             }
@@ -51,5 +68,28 @@ class SymfonyRoutingAdapter extends AbstractRoutingAdapter
         }
 
         return $routingResolution;
+    }
+
+    /**
+     * @return void
+     */
+    public function init(): void
+    {
+        $context = new RequestContext();
+        $context->fromRequest($this->request);
+        $this->router = new Router($this->loader, $this->resource, [], $context);
+    }
+
+    /**
+     * @param ContainerInterface $container
+     *
+     * @return void
+     */
+    public function registerService(ContainerInterface $container): void
+    {
+        if ($container instanceof ServiceManager) {
+            $container->setService(Router::class, $this->router);
+            $container->setAlias('router', Router::class);
+        }
     }
 }

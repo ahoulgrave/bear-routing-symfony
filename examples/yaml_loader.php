@@ -16,18 +16,9 @@ class TestController {
     }
 }
 
-$resource = function () {
-    $routes = new \Symfony\Component\Routing\RouteCollection();
-    $route = new \Symfony\Component\Routing\Route('/{name}', ['_controller' => TestController::class, '_action' => 'test', 'name' => 'Stranger']);
-    $routes->add('route_1', $route);
-    $subCollection = new \Symfony\Component\Routing\RouteCollection();
-    $subCollection->add('route_2', clone $route);
-    $subCollection->addPrefix('/group');
-    $routes->addCollection($subCollection);
-
-    return $routes;
-};
-$loader = new \Symfony\Component\Routing\Loader\ClosureLoader();
+$resource = 'routes.yml';
+$locator = new \Symfony\Component\Config\FileLocator([__DIR__]);
+$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader($locator);
 
 $config = [
     'routing' => new \Bear\Routing\SymfonyRoutingAdapter($loader, $resource),
