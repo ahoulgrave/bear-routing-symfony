@@ -38,6 +38,10 @@ class SymfonyRoutingAdapter extends AbstractRoutingAdapter
     {
         $this->loader   = $loader;
         $this->resource = $resource;
+
+        $context = new RequestContext();
+        $context->fromRequest($this->request);
+        $this->router = new Router($this->loader, $this->resource, [], $context);
     }
 
     /**
@@ -75,9 +79,7 @@ class SymfonyRoutingAdapter extends AbstractRoutingAdapter
      */
     public function init(): void
     {
-        $context = new RequestContext();
-        $context->fromRequest($this->request);
-        $this->router = new Router($this->loader, $this->resource, [], $context);
+        return;
     }
 
     /**
@@ -91,5 +93,13 @@ class SymfonyRoutingAdapter extends AbstractRoutingAdapter
             $container->setService(Router::class, $this->router);
             $container->setAlias('router', Router::class);
         }
+    }
+
+    /**
+     * @return Router
+     */
+    public function getRouter(): Router
+    {
+        return $this->router;
     }
 }
