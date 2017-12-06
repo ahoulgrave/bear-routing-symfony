@@ -3,6 +3,7 @@ namespace Bear\Routing;
 
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Router;
@@ -38,6 +39,10 @@ class SymfonyRoutingAdapter extends AbstractRoutingAdapter
     {
         $this->loader   = $loader;
         $this->resource = $resource;
+        $this->request  = Request::createFromGlobals();
+        $context = new RequestContext();
+        $context->fromRequest($this->request);
+        $this->router = new Router($this->loader, $this->resource, [], $context);
     }
 
     /**
@@ -75,9 +80,7 @@ class SymfonyRoutingAdapter extends AbstractRoutingAdapter
      */
     public function init(): void
     {
-        $context = new RequestContext();
-        $context->fromRequest($this->request);
-        $this->router = new Router($this->loader, $this->resource, [], $context);
+        return;
     }
 
     /**
