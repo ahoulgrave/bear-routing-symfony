@@ -1,13 +1,11 @@
 <?php
 namespace Bear\Routing;
 
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Router;
-use Zend\ServiceManager\ServiceManager;
 
 /**
  * Class SymfonyRoutingAdapter
@@ -81,19 +79,6 @@ class SymfonyRoutingAdapter extends AbstractRoutingAdapter
     public function init(): void
     {
         return;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     *
-     * @return void
-     */
-    public function registerService(ContainerInterface $container): void
-    {
-        if ($container instanceof ServiceManager) {
-            $container->setService(Router::class, $this->router);
-            $container->setAlias('router', Router::class);
-        }
     }
 
     /**
